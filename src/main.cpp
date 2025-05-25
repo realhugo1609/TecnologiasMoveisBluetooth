@@ -9,6 +9,11 @@
 
 #include <Arduino.h>
 #include <NimBLEDevice.h>
+#include <Stepper.h>
+
+const int stepsPerRevolution = 100;  // change this to fit the number of steps per revolution
+int direcao = 0;
+Stepper myStepper(stepsPerRevolution, 5, 18, 19, 21);
 
 static NimBLEServer* pServer;
 
@@ -71,13 +76,18 @@ class CharacteristicCallbacks : public NimBLECharacteristicCallbacks {
     void onRead(NimBLECharacteristic* pCharacteristic, NimBLEConnInfo& connInfo) override {
         Serial.printf("%s : onRead(), value: %s\n",
                       pCharacteristic->getUUID().toString().c_str(),
-                      pCharacteristic->getValue().c_str());
+                      pCharacteristic->getValue().c_str());           
     }
 
     void onWrite(NimBLECharacteristic* pCharacteristic, NimBLEConnInfo& connInfo) override {
         Serial.printf("%s : onWrite(), value: %s\n",
                       pCharacteristic->getUUID().toString().c_str(),
                       pCharacteristic->getValue().c_str());
+
+
+        if (strcmp(pCharacteristic->getValue().c_str(), "sentido1") == 0) direcao = 1;
+        else if (strcmp(pCharacteristic->getValue().c_str(), "sentido2") == 0) direcao = -1;
+        else if (strcmp(pCharacteristic->getValue().c_str(), "sentido0") == 0) direcao = 0;               
     }
 
     /**
@@ -121,6 +131,8 @@ class DescriptorCallbacks : public NimBLEDescriptorCallbacks {
 } dscCallbacks;
 
 void setup(void) {
+    myStepper.setSpeed(60);
+
     Serial.begin(115200);
     Serial.printf("Starting NimBLE Server\n");
 
@@ -207,8 +219,8 @@ void setup(void) {
 
 void loop() {
     /** Loop here and send notifications to connected peers */
+    /*
     delay(2000);
-
     if (pServer->getConnectedCount()) {
         NimBLEService* pSvc = pServer->getServiceByUUID("BAAD");
         if (pSvc) {
@@ -218,4 +230,20 @@ void loop() {
             }
         }
     }
+    */
+/*
+    // step one revolution  in one direction:
+    Serial.println("clockwise");
+    myStepper.step(stepsPerRevolution);
+    //delay(500);
+
+    // step one revolution in the other direction:
+    Serial.println("counterclockwise");
+    myStepper.step(-stepsPerRevolution);
+    //delay(500);
+*/
+
+
+
+    myStepper.step(direcao);
 }
