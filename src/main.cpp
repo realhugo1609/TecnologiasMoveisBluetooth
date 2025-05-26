@@ -185,6 +185,7 @@ class CharacteristicCallbacks : public NimBLECharacteristicCallbacks {
         if (strcmp(pCharacteristic->getValue().c_str(), "sentido1") == 0) direcao = 1;
         else if (strcmp(pCharacteristic->getValue().c_str(), "sentido2") == 0) direcao = -1;
         else if (strcmp(pCharacteristic->getValue().c_str(), "sentido0") == 0) direcao = 0;
+        //MARIO
         else if (strcmp(pCharacteristic->getValue().c_str(), "musica2") == 0) {
             melody[0] = NOTE_E7;  melody[1] = NOTE_E7;  melody[2] = 0;        melody[3] = NOTE_E7;  melody[4] = 0;         melody[5] = NOTE_C7;   melody[6] = NOTE_E7;  melody[7] = 0;
             melody[8] = NOTE_G7;  melody[9] = 0;        melody[10] = 0;       melody[11] = 0;       melody[12] = NOTE_G6;  melody[13] = 0;        melody[14] = 0;       melody[15] = 0;
@@ -208,9 +209,8 @@ class CharacteristicCallbacks : public NimBLECharacteristicCallbacks {
             noteDurations[63]=4; noteDurations[64]=8; noteDurations[65]=8; noteDurations[66]=4; noteDurations[67]=8; noteDurations[68]=8; noteDurations[69]=8; noteDurations[70]=8;
             noteDurations[71]=4; noteDurations[72]=8; noteDurations[73]=8; noteDurations[74]=8; noteDurations[75]=8; noteDurations[76]=8; noteDurations[77]=8;
 
-
             //for (int i = 0; i < sizeof(melody)/sizeof(int); i++) {
-            for (int i = 0; i < 50; i++) {
+            for (int i = 0; i < 78; i++) {
                 int noteDuration = 1000 / noteDurations[i];
                 tone(12, melody[i], noteDuration);
 
@@ -219,8 +219,72 @@ class CharacteristicCallbacks : public NimBLECharacteristicCallbacks {
                 noTone(12);
             }
 
+        }
+        
+        //STAR WARS
+        else if (strcmp(pCharacteristic->getValue().c_str(), "musica3") == 0) {
+            melody[0] = NOTE_A4;  melody[1] = NOTE_A4;  melody[2] = NOTE_F4;        melody[3] = NOTE_C5;  melody[4] = NOTE_A4;         melody[5] = NOTE_F4;   melody[6] = NOTE_C5;  melody[7] = NOTE_A4;
+            melody[8] = NOTE_E5;  melody[9] = NOTE_E5;        melody[10] = NOTE_E5;       melody[11] = NOTE_F5;       melody[12] = NOTE_C5;  melody[13] = NOTE_GS4;        melody[14] = NOTE_F4;       melody[15] = NOTE_C5; melody[16] = NOTE_A4;
+            melody[17] = NOTE_A5; melody[18] = NOTE_A4;       melody[19] = NOTE_A4;       melody[20] = NOTE_A5; melody[21] = NOTE_GS5;        melody[22] = NOTE_G5;        melody[23] = NOTE_FS5; melody[24] = NOTE_F5; melody[25] = NOTE_FS5;
+            melody[26] = 0;       melody[27] = NOTE_AS4; melody[28] = NOTE_DS5;       melody[29] = NOTE_D5; melody[30] = NOTE_CS5;        melody[31] = NOTE_C5; melody[32] = NOTE_B4; melody[33] = NOTE_C5;
+            
+            noteDurations[0]=500; noteDurations[1]=500; noteDurations[2]=500; noteDurations[3]=350; noteDurations[4]=150; noteDurations[5]=500; noteDurations[6]=350; noteDurations[7]=150;
+            noteDurations[8]=500; noteDurations[9]=500; noteDurations[10]=500; noteDurations[11]=350; noteDurations[12]=150; noteDurations[13]=500; noteDurations[14]=350; noteDurations[15]=150; noteDurations[16]=1000;
+            noteDurations[17]=500; noteDurations[18]=350; noteDurations[19]=150; noteDurations[20]=500; noteDurations[21]=250; noteDurations[22]=250; noteDurations[23]=125; noteDurations[24]=125; noteDurations[25]=250;
+            noteDurations[26]=250; noteDurations[27]=500; noteDurations[28]=250; noteDurations[29]=250; noteDurations[30]=125; noteDurations[31]=125; noteDurations[32]=250; noteDurations[33]=250;
+        
+            for (int i = 0; i < 34; i++) {
+                int noteDuration = noteDurations[i];
+                if (melody[i] == 0) {
+                    delay(noteDuration); // pause for rest
+                } else {
+                    tone(12, melody[i], noteDuration);
+                    delay(noteDuration * 1.3);
+                    noTone(12);
+                }
+            }
+        }
 
-        }               
+
+        else if (strcmp(pCharacteristic->getValue().c_str(), "musica1") == 0) {
+
+            melody[0] = NOTE_E4; melody[1] = NOTE_E4; melody[2] = NOTE_F4; melody[3] = NOTE_G4; 
+            melody[4] = NOTE_G4; melody[5] = NOTE_F4; melody[6] = NOTE_E4; melody[7] = NOTE_D4; 
+            melody[8] = NOTE_C4; melody[9] = NOTE_C4; melody[10] = NOTE_D4; melody[11] = NOTE_E4; 
+            melody[12] = NOTE_E4; melody[13] = NOTE_D4; melody[14] = NOTE_D4; 
+            melody[15] = NOTE_E4; melody[16] = NOTE_E4; melody[17] = NOTE_F4; melody[18] = NOTE_G4; 
+            melody[19] = NOTE_G4; melody[20] = NOTE_F4; melody[21] = NOTE_E4; melody[22] = NOTE_D4; 
+            melody[23] = NOTE_C4; melody[24] = NOTE_C4; melody[25] = NOTE_D4; melody[26] = NOTE_E4; 
+            melody[27] = NOTE_D4; melody[28] = NOTE_C4; melody[29] = NOTE_C4; 
+
+            noteDurations[0] = 4; noteDurations[1] = 4; noteDurations[2] = 4; noteDurations[3] = 4; 
+            noteDurations[4] = 4; noteDurations[5] = 4; noteDurations[6] = 4; noteDurations[7] = 4; 
+            noteDurations[8] = 4; noteDurations[9] = 4; noteDurations[10] = 4; noteDurations[11] = 4; 
+            noteDurations[12] = 4; noteDurations[13] = 4; noteDurations[14] = 2; 
+            noteDurations[15] = 4; noteDurations[16] = 4; noteDurations[17] = 4; noteDurations[18] = 4; 
+            noteDurations[19] = 4; noteDurations[20] = 4; noteDurations[21] = 4; noteDurations[22] = 4; 
+            noteDurations[23] = 4; noteDurations[24] = 4; noteDurations[25] = 4; noteDurations[26] = 4; 
+            noteDurations[27] = 4; noteDurations[28] = 4; noteDurations[29] = 2; 
+
+            for (int i = 0; i < 30; i++) {
+                int noteDuration = 1000 / noteDurations[i];
+                tone(12, melody[i], noteDuration);
+
+                // Pause between notes for clarity
+                int pauseBetweenNotes = noteDuration * 1.3;
+                delay(pauseBetweenNotes);
+
+                noTone(12);
+            }
+            
+
+
+        }
+
+
+
+
+
     }
 
     /**
