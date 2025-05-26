@@ -361,13 +361,17 @@ void setup(void) {
     pServer->setCallbacks(&serverCallbacks);
 
     NimBLEService*        pDeadService = pServer->createService("DEAD");
-    NimBLECharacteristic* pBeefCharacteristic =
-        pDeadService->createCharacteristic("BEEF",
-                                           NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE |
-                                               /** Require a secure connection for read and write access */
-                                               NIMBLE_PROPERTY::READ_ENC | // only allow reading if paired / encrypted
-                                               NIMBLE_PROPERTY::WRITE_ENC  // only allow writing if paired / encrypted
-        );
+
+    NimBLECharacteristic* pBeefCharacteristic = pDeadService->createCharacteristic("BEEF", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
+    
+    //NimBLECharacteristic* pBeefCharacteristic =
+    //    pDeadService->createCharacteristic("BEEF",
+    //                                       NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE |
+    //                                           /** Require a secure connection for read and write access */
+    //                                           NIMBLE_PROPERTY::READ_ENC | // only allow reading if paired / encrypted
+    //                                           NIMBLE_PROPERTY::WRITE_ENC  // only allow writing if paired / encrypted
+    //    );
+        
 
     pBeefCharacteristic->setValue("Burger");
     pBeefCharacteristic->setCallbacks(&chrCallbacks);
