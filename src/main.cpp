@@ -110,6 +110,8 @@ Stepper myStepper(stepsPerRevolution, 5, 18, 19, 21);
 int melody[80];
 int noteDurations[80];
 
+#define pinoRele 27
+
 
 static NimBLEServer* pServer;
 
@@ -217,7 +219,6 @@ class CharacteristicCallbacks : public NimBLECharacteristicCallbacks {
                 delay(pauseBetweenNotes);
                 noTone(12);
             }
-
         }
         
         //STAR WARS
@@ -244,9 +245,7 @@ class CharacteristicCallbacks : public NimBLECharacteristicCallbacks {
             }
         }
 
-
         else if (strcmp(pCharacteristic->getValue().c_str(), "musica1") == 0) {
-
             melody[0] = NOTE_E4; melody[1] = NOTE_E4; melody[2] = NOTE_F4; melody[3] = NOTE_G4; 
             melody[4] = NOTE_G4; melody[5] = NOTE_F4; melody[6] = NOTE_E4; melody[7] = NOTE_D4; 
             melody[8] = NOTE_C4; melody[9] = NOTE_C4; melody[10] = NOTE_D4; melody[11] = NOTE_E4; 
@@ -275,8 +274,10 @@ class CharacteristicCallbacks : public NimBLECharacteristicCallbacks {
 
                 noTone(12);
             }
-
         }
+
+        else if (strcmp(pCharacteristic->getValue().c_str(), "abrerele") == 0) digitalWrite(pinoRele, LOW);
+        else if (strcmp(pCharacteristic->getValue().c_str(), "fecharele") == 0) digitalWrite(pinoRele, HIGH);
 
     }
 
@@ -321,6 +322,7 @@ class DescriptorCallbacks : public NimBLEDescriptorCallbacks {
 } dscCallbacks;
 
 void setup(void) {
+    pinMode(pinoRele, OUTPUT);
 
     //INICIALIZAR LEDC PRA NAO DAR PROBLEMA COM TONE
     int channel = 0;           // LEDC channel (0-7)
@@ -401,15 +403,40 @@ void setup(void) {
     pC01Ddsc->setValue("Send it back!");
     pC01Ddsc->setCallbacks(&dscCallbacks);
 
+
+
+
+
+    //SERVICO NOVO (NAO UTILIZADO)
+    NimBLEService*        pReleService = pServer->createService("RELE");
+    NimBLECharacteristic* pCReleCharacteristic =
+        pReleService->createCharacteristic("CRele", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
+
+    pCReleCharacteristic->setValue("Fries");
+    pCReleCharacteristic->setCallbacks(&chrCallbacks);
+    /** Custom descriptor: Arguments are UUID, Properties, max length of the value in bytes */
+    NimBLEDescriptor* pC01Ddsc2 =
+        pCReleCharacteristic->createDescriptor("C01D2",
+                                              NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_ENC,
+                                              20);
+    pC01Ddsc2->setValue("Send it back!");
+    pC01Ddsc2->setCallbacks(&dscCallbacks);
+
+
+
+
+
     /** Start the services when finished creating all Characteristics and Descriptors */
     pDeadService->start();
     pBaadService->start();
+    pReleService->start();
 
     /** Create an advertising instance and add the services to the advertised data */
     NimBLEAdvertising* pAdvertising = NimBLEDevice::getAdvertising();
     pAdvertising->setName("NimBLE-Server");
     pAdvertising->addServiceUUID(pDeadService->getUUID());
     pAdvertising->addServiceUUID(pBaadService->getUUID());
+    pAdvertising->addServiceUUID(pReleService->getUUID());
     /**
      *  If your device is battery powered you may consider setting scan response
      *  to false as it will extend battery life at the expense of less data sent.
