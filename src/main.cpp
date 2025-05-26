@@ -276,11 +276,8 @@ class CharacteristicCallbacks : public NimBLECharacteristicCallbacks {
 
                 noTone(12);
             }
-            
-
 
         }
-
 
     }
 
