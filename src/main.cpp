@@ -338,83 +338,35 @@ void setup(void) {
     Serial.begin(115200);
     Serial.printf("Starting NimBLE Server\n");
 
-    /** Initialize NimBLE and set the device name */
     NimBLEDevice::init("NimBLE");
 
-    /**
-     * Set the IO capabilities of the device, each option will trigger a different pairing method.
-     *  BLE_HS_IO_DISPLAY_ONLY    - Passkey pairing
-     *  BLE_HS_IO_DISPLAY_YESNO   - Numeric comparison pairing
-     *  BLE_HS_IO_NO_INPUT_OUTPUT - DEFAULT setting - just works pairing
-     */
-    // NimBLEDevice::setSecurityIOCap(BLE_HS_IO_DISPLAY_ONLY); // use passkey
-    // NimBLEDevice::setSecurityIOCap(BLE_HS_IO_DISPLAY_YESNO); //use numeric comparison
+    // Cria o servidor BLE
+    NimBLEServer *pServer = NimBLEDevice::createServer();
 
-    /**
-     *  2 different ways to set security - both calls achieve the same result.
-     *  no bonding, no man in the middle protection, BLE secure connections.
-     *
-     *  These are the default values, only shown here for demonstration.
-     */
-    // NimBLEDevice::setSecurityAuth(false, false, true);
+    // Primeiro serviço
+    NimBLEService *pService1 = pServer->createService("BAAD"); // UUID do primeiro serviço
+    NimBLECharacteristic *pCharacteristic1 = pService1->createCharacteristic("F00D", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+    pCharacteristic1->setValue("Hello from Service 1");
+    pService1->start();
 
-    NimBLEDevice::setSecurityAuth(/*BLE_SM_PAIR_AUTHREQ_BOND | BLE_SM_PAIR_AUTHREQ_MITM |*/ BLE_SM_PAIR_AUTHREQ_SC);
-    pServer = NimBLEDevice::createServer();
-    pServer->setCallbacks(&serverCallbacks);
+    // Segundo serviço
+    NimBLEService *pService2 = pServer->createService("DEAD"); // UUID do segundo serviço
+    NimBLECharacteristic *pCharacteristic2 = pService2->createCharacteristic("BEEF", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+    pCharacteristic2->setValue("Hello from Service 2");
+    pService2->start();
 
-    NimBLEService*  pDeadService = pServer->createService("DEAD");
+    // Terceiro serviço
+    NimBLEService *pService2 = pServer->createService("RELE"); // UUID do segundo serviço
+    NimBLECharacteristic *pCharacteristic2 = pService2->createCharacteristic("NICE", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+    pCharacteristic2->setValue("Hello from Service 3");
+    pService2->start();
 
-    NimBLECharacteristic* pBeefCharacteristic = pDeadService->createCharacteristic("BEEF", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
-    
-    pBeefCharacteristic->setValue("Burger");
-    pBeefCharacteristic->setCallbacks(&chrCallbacks);
-
-    NimBLE2904* pBeef2904 = pBeefCharacteristic->create2904();
-    pBeef2904->setFormat(NimBLE2904::FORMAT_UTF8);
-    pBeef2904->setCallbacks(&dscCallbacks);
-
-    NimBLEService*        pBaadService = pServer->createService("BAAD");
-    NimBLECharacteristic* pFoodCharacteristic =
-        pBaadService->createCharacteristic("F00D", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
-
-    pFoodCharacteristic->setValue("Fries");
-    pFoodCharacteristic->setCallbacks(&chrCallbacks);
-
-    /** Custom descriptor: Arguments are UUID, Properties, max length of the value in bytes */
-    NimBLEDescriptor* pC01Ddsc =
-        pFoodCharacteristic->createDescriptor("C01D",
-                                              NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_ENC,
-                                              20);
-    pC01Ddsc->setValue("Send it back!");
-    pC01Ddsc->setCallbacks(&dscCallbacks);
-
-
-    //criando o rele service
-    
-    NimBLEService *pService = pServer->createService("ABCD");
-    NimBLECharacteristic *pCharacteristic = pService->createCharacteristic("1234");
-    pService->start();
-    pCharacteristic->setValue("Hello BLE");
-
-
-
-
-    /** Start the services when finished creating all Characteristics and Descriptors */
-    pDeadService->start();
-    pBaadService->start();
-
-
-    /** Create an advertising instance and add the services to the advertised data */
-    NimBLEAdvertising* pAdvertising = NimBLEDevice::getAdvertising();
-    pAdvertising->setName("NimBLE-Server");
-    pAdvertising->addServiceUUID("ABCD"); // advertise the UUID of our service
-    pAdvertising->addServiceUUID(pDeadService->getUUID());
-    pAdvertising->addServiceUUID(pBaadService->getUUID());
-    /**
-     *  If your device is battery powered you may consider setting scan response
-     *  to false as it will extend battery life at the expense of less data sent.
-     */
-    pAdvertising->enableScanResponse(true);
+    // Configura a publicidade BLE
+    NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();
+    pAdvertising->addServiceUUID("BAAD"); // UUID do primeiro serviço
+    pAdvertising->addServiceUUID("DEAD"); // UUID do segundo serviço
+    pAdvertising->addServiceUUID("RELE"); // UUID do segundo serviço
+    pAdvertising->setName("NimBLE");
     pAdvertising->start();
 
     Serial.printf("Advertising Started\n");
