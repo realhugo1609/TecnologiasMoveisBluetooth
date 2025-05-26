@@ -410,13 +410,13 @@ void setup(void) {
     //SERVICO NOVO (NAO UTILIZADO)
     NimBLEService*        pReleService = pServer->createService("RELE");
     NimBLECharacteristic* pCReleCharacteristic =
-        pReleService->createCharacteristic("CRele", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
+        pReleService->createCharacteristic("R00E", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
 
     pCReleCharacteristic->setValue("Fries");
     pCReleCharacteristic->setCallbacks(&chrCallbacks);
     /** Custom descriptor: Arguments are UUID, Properties, max length of the value in bytes */
     NimBLEDescriptor* pC01Ddsc2 =
-        pCReleCharacteristic->createDescriptor("C01D2",
+        pCReleCharacteristic->createDescriptor("C02D",
                                               NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_ENC,
                                               20);
     pC01Ddsc2->setValue("Send it back!");
