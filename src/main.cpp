@@ -282,9 +282,6 @@ class CharacteristicCallbacks : public NimBLECharacteristicCallbacks {
         }
 
 
-
-
-
     }
 
     /**
