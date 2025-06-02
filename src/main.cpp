@@ -362,28 +362,13 @@ void setup(void) {
     pServer = NimBLEDevice::createServer();
     pServer->setCallbacks(&serverCallbacks);
 
-    NimBLEService*        pDeadService = pServer->createService("DEAD");
+    NimBLEService*  pDeadService = pServer->createService("DEAD");
 
     NimBLECharacteristic* pBeefCharacteristic = pDeadService->createCharacteristic("BEEF", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
     
-    //NimBLECharacteristic* pBeefCharacteristic =
-    //    pDeadService->createCharacteristic("BEEF",
-    //                                       NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE |
-    //                                           /** Require a secure connection for read and write access */
-    //                                           NIMBLE_PROPERTY::READ_ENC | // only allow reading if paired / encrypted
-    //                                           NIMBLE_PROPERTY::WRITE_ENC  // only allow writing if paired / encrypted
-    //    );
-        
-
     pBeefCharacteristic->setValue("Burger");
     pBeefCharacteristic->setCallbacks(&chrCallbacks);
 
-    /**
-     *  2902 and 2904 descriptors are a special case, when createDescriptor is called with
-     *  either of those uuid's it will create the associated class with the correct properties
-     *  and sizes. However we must cast the returned reference to the correct type as the method
-     *  only returns a pointer to the base NimBLEDescriptor class.
-     */
     NimBLE2904* pBeef2904 = pBeefCharacteristic->create2904();
     pBeef2904->setFormat(NimBLE2904::FORMAT_UTF8);
     pBeef2904->setCallbacks(&dscCallbacks);
@@ -404,24 +389,15 @@ void setup(void) {
     pC01Ddsc->setCallbacks(&dscCallbacks);
 
 
+    //criando o rele service-
+    
+    NimBLEService *pService = pServer->createService("ABCD");
+    NimBLECharacteristic *pCharacteristic = pService->createCharacteristic("1234");
 
-
-
-    //SERVICO NOVO (NAO UTILIZADO)
-    NimBLEService*        pReleService = pServer->createService("RELE");
-    NimBLECharacteristic* pCReleCharacteristic =
-        pReleService->createCharacteristic("R00E", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
-
-    pCReleCharacteristic->setValue("Fries");
-    pCReleCharacteristic->setCallbacks(&chrCallbacks);
-    /** Custom descriptor: Arguments are UUID, Properties, max length of the value in bytes */
-    NimBLEDescriptor* pC01Ddsc2 =
-        pCReleCharacteristic->createDescriptor("C02D",
-                                              NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_ENC,
-                                              20);
-    pC01Ddsc2->setValue("Send it back!");
-    pC01Ddsc2->setCallbacks(&dscCallbacks);
-
+    pCharacteristic->setCallbacks(&chrCallbacks);
+    
+    pService->start();
+    pCharacteristic->setValue("Hello BLE");
 
 
 
@@ -429,14 +405,14 @@ void setup(void) {
     /** Start the services when finished creating all Characteristics and Descriptors */
     pDeadService->start();
     pBaadService->start();
-    pReleService->start();
+
 
     /** Create an advertising instance and add the services to the advertised data */
     NimBLEAdvertising* pAdvertising = NimBLEDevice::getAdvertising();
     pAdvertising->setName("NimBLE-Server");
+    pAdvertising->addServiceUUID("ABCD"); // advertise the UUID of our service
     pAdvertising->addServiceUUID(pDeadService->getUUID());
     pAdvertising->addServiceUUID(pBaadService->getUUID());
-    pAdvertising->addServiceUUID(pReleService->getUUID());
     /**
      *  If your device is battery powered you may consider setting scan response
      *  to false as it will extend battery life at the expense of less data sent.
